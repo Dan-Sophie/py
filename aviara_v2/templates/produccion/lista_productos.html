@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="font-weight-bold text-dark">Catálogo vía API</h2>
+            <p class="text-muted">Productos sincronizados con Open Food Facts</p>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for producto in productos %}
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm h-100 border-0" style="border-radius: 15px; overflow: hidden;">
+                {% if producto.imagen %}
+                    <img src="{{ producto.imagen }}" class="card-img-top" style="height: 180px; object-fit: contain; background: #f8f9fa;">
+                {% else %}
+                    <div class="bg-light text-center py-5"><i class="fas fa-egg fa-3x text-muted"></i></div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                    <h6 class="font-weight-bold text-primary mb-1">{{ producto.nombre|truncatechars:40 }}</h6>
+                    <p class="text-muted small mb-2">Marca: {{ producto.marca }}</p>
+                    <div class="mt-auto">
+                        <span class="badge badge-light border text-dark">{{ producto.cantidad }}</span>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-sm btn-outline-primary btn-round">Ver detalles</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">No se pudieron cargar productos de la API.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+<html>
+<head>
+    <style>
+        @page {size: letter; margin: 2cm;}
+        body { font-family: sans-serif; }
+        h1 { text-align: center; color: #2c3e50; }
+        table { width: 100%; border-collapse: collapse; margin-top:20px; }
+        th, td { border: 1px solid #bdc3c7; }
+        th { background-color: #ecf0f1; }
+        .header-info { text-align: right; font-size: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header-info">Generado el: {{ fecha }}</div>
+    <h1>Reporte de Existencias - AVIARA</h1>
+    
+    <h3>Inventario de Huevos</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Lote</th>
+                <th>Clasificación</th>
+                <th>Cantidad Disponible</th>
+                <th>Vencimiento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in huevos %}
+            <tr>
+                <td>{{ h.produccion.lote.codigo_lote }}</td>
+                <td>{{ h.produccion.get_clasificacion_display }}</td>
+                <td>{{ h.cantidad_disponible }}</td>
+                <td>{{ h.fecha_vencimiento }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h3>Inventario Agrícola</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Stock</th>
+                <th>Unidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in agricola %}
+            <tr>
+                <td>{{ a.produco.nombre }}</td>
+                <td>{{ a.cantidad_disponible }}</td>
+                <td>{{ a.producto.unidad_medida }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

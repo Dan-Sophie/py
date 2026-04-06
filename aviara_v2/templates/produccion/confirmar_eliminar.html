@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h3>¿Deseas eliminar esta producción?</h3>
+    <p>Lote: {{ produccion.lote }} | Cantidad: {{ produccion.cantidad_total }}</p>
+    <form method="post">{% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="{% url 'lista_produccion' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

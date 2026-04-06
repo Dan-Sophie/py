@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <h2 class="mb-4">Producción</h2>
+
+    <a href="{% url 'crear_produccion' %}" class="btn btn-primary mb-3">
+        Nueva Producción
+    </a>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Lote</th>
+                <th>Fecha</th>
+                <th>Cantidad</th>
+                <th>Clasificación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in producciones %}
+            <tr>
+                <td>{{ p.lote }}</td>
+                <td>{{ p.fecha_recoleccion }}</td>
+                <td>{{ p.cantidad_total }}</td>
+                <td>{{ p.clasificacion }}</td>
+                <td>
+                    <a href="{% url 'editar_produccion' p.id %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'eliminar_produccion' p.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    <a href="{% url 'crear_produccion' %}" class="btn btn-primary mb-3">Nueva Producción</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No hay producción registrada</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

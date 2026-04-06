@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Producción de Huevos</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #333; padding: 5px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h2>Producción de Huevos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Lote</th>
+                <th>Fecha Recolección</th>
+                <th>Cantidad Total</th>
+                <th>Clasificación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in producciones %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.lote }}</td>
+                <td>{{ p.fecha_recoleccion }}</td>
+                <td>{{ p.cantidad_total }}</td>
+                <td>{{ p.clasificacion }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

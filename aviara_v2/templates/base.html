@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviara</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <!-- LOGO -->
+        <a class="navbar-brand font-weight-bold logo" href="{% url 'home' %}">
+            🐔 AVIARA
+        </a>
+
+        <!-- LINKS -->
+        <div class="d-flex align-items-center">
+
+            <a href="{% url 'catalogo' %}" class="nav-link-custom">
+                Catálogo
+            </a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'carrito:ver_carrito' %}" class="nav-link-custom">
+                    🛒
+                </a>
+
+                <form action="{% url 'logout' %}" method="post" class="ml-2">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-light btn-rounded">
+                        Salir
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link-custom">
+                    Ingresar
+                </a>
+            {% endif %}
+
+        </div>
+
+    </div>
+</nav>
+
+<!-- ===== CONTENIDO ===== -->
+{% block content %}
+{% endblock %}
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

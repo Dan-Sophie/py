@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Pedidos</h2>
+
+    <div class="mb-3">
+        <a href="{% url 'crear_pedido' %}" class="btn btn-primary">Nuevo Pedido</a>
+        <a href="{% url 'pdf_pedidos' %}" class="btn btn-success">Descargar PDF Pedidos</a>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pedidos %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.cliente }}</td>
+                <td>{{ p.fecha_pedido }}</td>
+                <td>{{ p.estado }}</td>
+                <td>{{ p.total|floatformat:2 }}</td>
+                <td>
+                    <a href="{% url 'editar_pedido' p.id %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'eliminar_pedido' p.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No hay pedidos registrados</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
