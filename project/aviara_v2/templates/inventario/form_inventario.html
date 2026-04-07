@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 pb-5">
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <a href="{% url 'inventario_list' %}" class="btn-back">
+                <i class="fas fa-chevron-left mr-2"></i> Cancelar y Volver al Inventario
+            </a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="card-header py-4 text-center {% if tipo == 'Huevos' %}bg-primary{% else %}bg-success{% endif %} text-white border-0">
+                    <div class="mb-2">
+                        {% if tipo == 'Huevos' %}
+                            <i class="fas fa-egg fa-3x"></i>
+                        {% else %}
+                            <i class="fas fa-leaf fa-3x"></i>
+                        {% endif %}
+                    </div>
+                    <h3 class="font-weight-bold mb-0">
+                        {% if form.instance.pk %}Actualizar{% else %}Registrar{% endif %} {{ tipo }}
+                    </h3>
+                    <small class="opacity-75">Completa los campos para actualizar el stock</small>
+                </div>
+
+                <div class="card-body p-5 bg-white">
+                    <form method="POST" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                            <div class="mb-4">
+                                <label class="form-label font-weight-bold text-dark mb-2">
+                                    {{ field.label }}
+                                </label>
+                                
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-light border-right-0">
+                                            {% if 'cantidad' in field.name %}
+                                                <i class="fas fa-sort-numeric-up text-muted"></i>
+                                            {% elif 'fecha' in field.name %}
+                                                <i class="fas fa-calendar-alt text-muted"></i>
+                                            {% else %}
+                                                <i class="fas fa-edit text-muted"></i>
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    {{ field }}
+                                </div>
+
+                                {% if field.errors %}
+                                    <div class="alert alert-danger py-1 px-2 mt-2 small">
+                                        <i class="fas fa-exclamation-circle mr-1"></i> {{ field.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                                
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="mt-5">
+                            <button type="submit" class="btn btn-block btn-lg shadow-sm text-uppercase font-weight-bold {% if tipo == 'Huevos' %}btn-primary{% else %}btn-success{% endif %}" style="border-radius: 12px; letter-spacing: 1px;">
+                                <i class="fas fa-save mr-2"></i> Guardar Cambios
+                            </button>
+                            
+                            <p class="text-center mt-3 text-muted small">
+                                <i class="fas fa-lock mr-1"></i> Transacción segura - Aviara v2
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Reutilizamos el estilo del botón volver para coherencia */
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #ffffff;
+        color: #4b5563;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .btn-back:hover {
+        background-color: #f8f9fa;
+        color: #1f2937;
+        transform: translateX(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Estilos para los inputs dentro del formulario */
+    input, select, textarea {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0 10px 10px 0 !important; /* Redondeado solo derecha por el input-group */
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+    
+    input:focus, select:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .input-group-text {
+        border-radius: 10px 0 0 10px !important;
+        border: 1px solid #ced4da;
+    }
+
+    .card {
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
