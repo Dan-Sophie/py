@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Helvetica, sans-serif; }
+        h1 { text-align: center; color: #2c3e50; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #bdc3c7; padding: 8px; text-align: left; }
+        th { background-color: #34495e; color: white; }
+        .footer { text-align: right; font-size: 10px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>{{ empresa }}</h1>
+    
+    <h3>Inventario de Huevos</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Producción</th>
+                <th>Cantidad</th>
+                <th>Vencimiento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in huevos %}
+            <tr>
+                <td>{{ h.produccion }}</td>
+                <td>{{ h.cantidad_disponible }} unidades</td>
+                <td>{{ h.fecha_vencimiento }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Inventario Agrícola</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Cosecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in agricola %}
+            <tr>
+                <td>{{ a.producto.nombre }}</td>
+                <td>{{ a.cantidad_disponible }} kg</td>
+                <td>{{ a.fecha_cosecha }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Generado el: {% now "d/m/Y H:i" %}
+    </div>
+</body>
+</html>

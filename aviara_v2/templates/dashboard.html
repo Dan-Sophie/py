@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        --success-gradient: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        --warning-gradient: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        --danger-gradient: linear-gradient(135deg, #dc3545 0%, #bd2130 100%);
+    }
+    .card-stat {
+        transition: all 0.3s ease;
+        border: none !important;
+        border-radius: 20px !important;
+        overflow: hidden;
+    }
+    .card-stat:hover {
+        transform: translateY(-10px);
+        shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+    .icon-shape {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+    }
+    .btn-round {
+        border-radius: 50px;
+        padding: 8px 20px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .table-modern thead {
+        background-color: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+    .badge-soft-danger {
+        background-color: #fce4e4;
+        color: #dc3545;
+        padding: 5px 12px;
+        border-radius: 50px;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="row align-items-center mb-5">
+        <div class="col-md-7">
+            <h1 class="display-4 font-weight-bold text-dark mb-1" style="font-size: 2.5rem;">Panel de Control</h1>
+            <p class="lead text-muted">Gestión inteligente de la granja <span class="text-primary font-weight-bold">Aviara</span></p>
+        </div>
+        <div class="col-md-5 text-md-right">
+            <a href="{% url 'exportar_pdf' %}" class="btn btn-dark btn-round shadow-lg px-4">
+                <i class="fas fa-file-pdf mr-2"></i>Generar Reporte Global
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-stat shadow text-white h-100" style="background: var(--primary-gradient);">
+                <div class="card-body">
+                    <div class="icon-shape shadow-sm">
+                        <i class="fas fa-boxes fa-lg"></i>
+                    </div>
+                    <h5 class="text-center font-weight-bold mb-1">INVENTARIO</h5>
+                    <p class="text-center small opacity-8 mb-4">Materia Prima</p>
+                    <a href="{% url 'inventario_list' %}" class="btn btn-light btn-sm btn-block btn-round text-primary shadow-sm">Gestionar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-stat shadow text-white h-100" style="background: var(--success-gradient);">
+                <div class="card-body text-center">
+                    <div class="icon-shape shadow-sm">
+                        <i class="fas fa-apple-alt fa-lg"></i>
+                    </div>
+                    <h5 class="font-weight-bold mb-1">PRODUCTOS</h5>
+                    <p class="small opacity-8 mb-4">Catálogo Externo</p>
+                    <a href="{% url 'productos:productos_api' %}" class="btn btn-light btn-sm btn-block btn-round text-success shadow-sm">Ver Catálogo</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-stat shadow text-white h-100" style="background: var(--warning-gradient);">
+                <div class="card-body text-center">
+                    <div class="icon-shape shadow-sm">
+                        <i class="fas fa-industry fa-lg"></i>
+                    </div>
+                    <h5 class="font-weight-bold mb-1">PRODUCCIÓN</h5>
+                    <p class="small opacity-8 mb-4">Cosechas y Lotes</p>
+                    <a href="{% url 'produccion_lista' %}" class="btn btn-light btn-sm btn-block btn-round text-warning shadow-sm">Ver Registros</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-stat shadow text-white h-100" style="background: var(--danger-gradient);">
+                <div class="card-body text-center">
+                    <div class="icon-shape shadow-sm">
+                        <i class="fas fa-shopping-cart fa-lg"></i>
+                    </div>
+                    <h5 class="font-weight-bold mb-1">PEDIDOS</h5>
+                    <p class="small opacity-8 mb-4">Ventas y Clientes</p>
+                    <a href="{% url 'lista_pedidos' %}" class="btn btn-light btn-sm btn-block btn-round text-danger shadow-sm">Control Ventas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+                <div class="card-header bg-white py-4 border-0">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="mb-0 text-primary font-weight-bold">
+                                <i class="fas fa-warehouse mr-2"></i>Stock de Suministros
+                            </h4>
+                        </div>
+                        <div class="col text-right">
+                            <a href="{% url 'productos:crear_suministro' %}" class="btn btn-primary btn-round shadow-sm">
+                                <i class="fas fa-plus mr-2"></i>Nuevo Suministro
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive px-4 pb-4">
+                    <table class="table table-modern table-hover align-middle">
+                        <thead>
+                            <tr class="text-muted">
+                                <th>Suministro</th>
+                                <th>Fecha de Cosecha</th>
+                                <th>Estado Stock</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in suministros %}
+                            <tr>
+                                <td class="align-middle">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light p-2 rounded mr-3">
+                                            <i class="fas fa-box text-secondary"></i>
+                                        </div>
+                                        <span class="font-weight-bold text-dark">{{ item.producto }}</span>
+                                    </div>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="text-muted"><i class="far fa-calendar-alt mr-1"></i> {{ item.fecha_cosecha }}</span>
+                                </td>
+                                <td class="align-middle">
+                                    {% if item.cantidad_disponible < 10 %}
+                                        <span class="badge-soft-danger font-weight-bold">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i> {{ item.cantidad_disponible }} - Stock Bajo
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-pill badge-light border px-3 py-2 text-dark">
+                                            <i class="fas fa-check-circle text-success mr-1"></i> {{ item.cantidad_disponible }} Unidades
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right align-middle">
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-muted" type="button" data-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right shadow border-0" style="border-radius: 10px;">
+                                            <a class="dropdown-item text-primary" href="{% url 'editar_suministro' item.pk %}">
+                                                <i class="fas fa-edit mr-2"></i>Editar
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item text-danger" href="{% url 'eliminar_suministro' item.pk %}">
+                                                <i class="fas fa-trash mr-2"></i>Eliminar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5">
+                                    <img src="https://illustrations.popsy.co/gray/empty-folder.svg" style="width: 150px;" class="mb-3">
+                                    <p class="text-muted">No hay suministros registrados en el sistema.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

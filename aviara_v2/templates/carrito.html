@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-5">
+    <h2 class="fw-bold mb-4">Tu carrito </h2>
+
+    {% if carrito %}
+    <div class="card p-4 shadow-sm rounded-4">
+
+        {% for key, item in carrito.items %}
+        <div class="carrito-item d-flex justify-content-between align-items-center mb-4" id="fila-{{ key }}">
+    <div>
+        <h6 class="fw-bold mb-1">{{ item.nombre }}</h6>
+        <div class="d-flex align-items-center gap-2 mt-2">
+            <button class="btn btn-sm btn-outline-secondary cambiar-cantidad" 
+                    data-id="{{ key }}" data-accion="restar">-</button>
+            
+            <span id="cantidad-{{ key }}" class="fw-bold px-2">{{ item.cantidad }}</span>
+            
+            <button class="btn btn-sm btn-outline-secondary cambiar-cantidad" 
+                    data-id="{{ key }}" data-accion="sumar">+</button>
+        </div>
+    </div>
+
+    <div class="text-end">
+        <div class="fw-bold precio-formatear" id="subtotal-{{ key }}">
+            ${{ item.subtotal|default:item.precio|floatformat:0 }}
+        </div>
+        <a href="{% url 'eliminar_producto' key %}" class="btn btn-sm text-danger mt-2">Eliminar</a>
+    </div>
+</div>
+        {% endfor %}
+
+        <hr>
+
+        <div class="d-flex justify-content-between">
+            <h5>Total:</h5>
+            <h4 class="text-success precio-formatear" id="total-general">
+                ${{ total|floatformat:0 }}
+            </h4>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'vaciar_carrito' %}" class="btn btn-outline-secondary">
+                Vaciar carrito
+            </a>
+
+            <a href="{% url 'finalizar_compra' %}" class="btn btn-success">
+                Finalizar compra
+            </a>
+        </div>
+
+    </div>
+    {% else %}
+        <div class="text-center py-5">
+            <h4 class="text-muted">Tu carrito está vacío</h4>
+            <a href="/" class="btn btn-primary mt-3">Volver a la tienda</a>
+        </div>
+        {% endif %}
+</div>   
+
+{% csrf_token %} 
+<script>
+document.querySelectorAll('.cambiar-cantidad').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const prodId = this.dataset.id;
+        const accion = this.dataset.accion;
+
+        fetch("{% url 'actualizar_cantidad' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: new URLSearchParams({ id: prodId, accion: accion })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Respuesta de Django:", data); // Esto te dirá si Django respondió bien
+            
+            if (data.ok) {
+                // Actualizar Cantidad
+                const spanCant = document.getElementById(`cantidad-${prodId}`);
+                if (spanCant) spanCant.innerText = data.cantidad;
+
+                // Actualizar Subtotal (Formateado simple para evitar errores)
+                const divSub = document.getElementById(`subtotal-${prodId}`);
+                if (divSub) divSub.innerText = "$" + parseInt(data.nuevo_subtotal).toLocaleString('es-CO');
+
+                // Actualizar Total General
+                const divTotal = document.getElementById('total-general');
+                if (divTotal) divTotal.innerText = "$" + parseInt(data.total_carrito).toLocaleString('es-CO');
+
+                // Si llega a 0, ocultar la fila
+                if (data.cantidad <= 0) {
+                    document.getElementById(`fila-${prodId}`).remove();
+                }
+            }
+        })
+        .catch(error => console.error("Error en Fetch:", error));
+    });
+});
+</script>
+{% endblock %}
+
+<style>
+.carrito-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+</style>
