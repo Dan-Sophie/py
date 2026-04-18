@@ -15,7 +15,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-# core/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
@@ -27,27 +26,51 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # --- Autenticación (Nombres limpios) ---
+    # --- Autenticación (Login, Logout, Registro) ---
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('salir/', usuarios_views.salir, name='logout'),
     path('registro/', usuarios_views.registro_view, name='registro'),
 
-    # --- El Dashboard ---
+    # --- Recuperación de Contraseña (Recuperado) ---
+    # 1. Formulario inicial para pedir el reset
+    path('reset_password/', 
+         auth_views.PasswordResetView.as_view(template_name="registration/password_reset_form.html"), 
+         name="reset_password"),
+
+    # 2. Confirmación de envío de correo
+    path('reset_password_sent/', 
+         auth_views.PasswordResetDoneView.as_view(template_name="registration/password_reset_done.html"), 
+         name="password_reset_done"),
+
+    # 3. El enlace que llega al correo (validación de token)
+    path('reset/<uidb64>/<token>/', 
+         auth_views.PasswordResetConfirmView.as_view(template_name="registration/password_reset_confirm.html"), 
+         name="password_reset_confirm"),
+
+    # 4. Mensaje de éxito tras cambiar la clave
+    path('reset_password_complete/', 
+         auth_views.PasswordResetCompleteView.as_view(template_name="registration/password_reset_complete.html"), 
+         name="password_reset_complete"),
+
+    # --- El Dashboard (Punto de entrada principal) ---
+    # Aquí es donde ocurre la redirección de roles que hizo tu compañera
     path('', usuarios_views.dashboard, name='home'),
     path('panel/', usuarios_views.dashboard), 
 
     # --- Aplicaciones (Modularizadas) ---
     path('inventario/', include('inventario.urls')),
-    path('productos/', include('productos.urls')), # Aquí reside 'produccion_lista'
+    path('productos/', include('productos.urls')),
     path('ventas/', include('ventas.urls')),
     path('produccion/', include('produccion.urls')),
     path('carrito/', include('carrito.urls')),
+    
 
     # --- Reportes Globales ---
-    # Lo mantenemos aquí si quieres acceso directo desde el Dashboard principal
     path('exportar-pdf/', inventario_views.exportar_inventario_pdf, name='exportar_pdf'),
 
 ]
+
+# Configuración para archivos estáticos y media en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

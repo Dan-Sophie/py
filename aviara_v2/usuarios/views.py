@@ -1,15 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import RegistroForm
+from usuarios.models import Usuario
+from django.http import JsonResponse
+from productos.models import Producto
+from .forms import RegistroForm
 
-# --- GESTIÓN DE SESIÓN Y REGISTRO ---
 
 def registro_view(request):
     if request.method == 'POST':
-        # CAMBIO: Usamos RegistroForm en lugar de UserCreationForm estándar
         form = RegistroForm(request.POST)
         if form.is_valid():
             form.save()
@@ -17,7 +18,6 @@ def registro_view(request):
             return redirect('login') 
     else:
         form = RegistroForm()
-    
     return render(request, 'registration/registro.html', {'form': form})
 
 def salir(request):
@@ -25,18 +25,32 @@ def salir(request):
     django_logout(request)
     return redirect('login')
 
-# --- DASHBOARD Y ROLES ---
-
-@login_required
-def check_auth(request):
-    if request.user.is_staff:
-        return redirect('dashboard')
-    else:
-        return redirect('catalogo')
+# --- DASHBOARD Y HOME ---
 
 @login_required
 def dashboard(request):
-    """Vista del panel administrativo"""
-    if not request.user.is_staff:
-        return redirect('produccion_lista')
-    return render(request, 'dashboard.html')
+    # 1. SI ES ADMINISTRADOR (Cualquiera de los 3 que mencionaste)
+    if request.user.is_staff or request.user.is_superuser:
+        # Al terminar el login, el admin se va al Panel de Control
+        return render(request, 'dashboard.html')
+
+    # 2. SI ES CLIENTE
+    # Al terminar el login, el cliente se va a la Página Principal (Home)
+    if hasattr(request.user, 'rol') and request.user.rol == 'cliente':
+        # Definimos lo que verá el cliente en su home
+        categorias_home = [
+            {'id': 'huevos', 'icon': 'egg', 'color': 'warning'},
+            {'id': 'pollos', 'icon': 'drumstick-bite', 'color': 'danger'},
+            {'id': 'lacteos', 'icon': 'cheese', 'color': 'info'},
+        ]
+        return render(request, 'usuarios/home.html', {
+            'categorias': categorias_home
+        })
+
+    # 3. SI NO TIENE ROL (Por si acaso)
+    return render(request, 'home.html')
+    
+
+
+
+

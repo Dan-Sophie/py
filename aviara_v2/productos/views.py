@@ -27,4 +27,18 @@ def admin_productos_api(request):
 
 # Esta función DEBE existir para que no te dé el AttributeError en las URLs
 def crear_producto_api(request):
-    return render(request, 'productos/form_producto_api.html')
+    return render(request, 'productos/lista_productos_api.html')
+
+def catalogo_local(request):
+    productos_locales = Producto.objects.all()
+    # Cambiamos el nombre del template aquí:
+    return render(request, 'productos/tienda_virtual.html', {
+        'productos': productos_locales
+    })
+
+def tienda_virtual_view(request):
+    # Traemos los productos con sus variaciones para evitar muchas consultas a la BD
+    productos_locales = Producto.objects.all().prefetch_related('variaciones')
+    return render(request, 'productos/tienda_virtual.html', {
+        'productos': productos_locales
+    })

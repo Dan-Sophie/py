@@ -1,8 +1,11 @@
 from django.urls import path
 from . import views
 
+app_name= 'productos'
+
 urlpatterns = [
     # Catálogo cliente (Base de datos local)
+    path('tienda/', views.tienda_virtual_view, name='ver_tienda'),
     path('', views.lista_productos_api, name='catalogo'),
     
     # Panel Admin (API Externa)

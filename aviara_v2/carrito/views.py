@@ -1,83 +1,84 @@
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from productos.models import VariacionProducto
-from .carrito import Carrito
-from django.contrib.auth.decorators import login_required
-from ventas.models import Pedido, ItemPedido 
-from django.contrib import messages
 
 
-# ===== VER CARRITO =====
-@login_required(login_url='login')
+def agregar_carrito(request):
+    if request.method == 'POST':
+        var_id = request.POST.get('id')
+        cantidad = int(request.POST.get('cantidad', 1))
+
+        variacion = get_object_or_404(VariacionProducto, id=var_id)
+
+        carrito = request.session.get('carrito', {})
+
+        if var_id in carrito:
+            carrito[var_id]['cantidad'] += cantidad
+        else:
+            carrito[var_id] = {
+                'nombre': f"{variacion.producto.nombre} - {variacion.presentacion}",
+                'precio': float(variacion.precio),
+                'cantidad': cantidad
+            }
+
+        request.session['carrito'] = carrito
+        request.session.modified = True
+
+        return JsonResponse({'ok': True})
+
+
 def ver_carrito(request):
-    carrito = request.session.get("carrito", {})
+    carrito = request.session.get('carrito', {})
+    total = sum(item['precio'] * item['cantidad'] for item in carrito.values())
 
-    if not carrito:
-        messages.info(request, "Tu carrito está vacío.")
-
-    return render(request, 'carrito/ver_carrito.html')
-
-
-# ===== AGREGAR =====
-@login_required(login_url='login')
-def agregar_producto(request, variacion_id):
-    carrito = Carrito(request)
-    variacion = get_object_or_404(VariacionProducto, id=variacion_id)
-
-    carrito.agregar(variacion=variacion)
-
-    return redirect(request.META.get('HTTP_REFERER', 'catalogo'))
-
-
-# ===== ELIMINAR =====
-@login_required(login_url='login')
-def eliminar_producto(request, variacion_id):
-    carrito = Carrito(request)
-    variacion = get_object_or_404(VariacionProducto, id=variacion_id)
-
-    carrito.eliminar(variacion=variacion)
-
-    return redirect("carrito:ver_carrito")
-
-
-# ===== RESTAR =====
-@login_required(login_url='login')
-def restar_producto(request, variacion_id):
-    carrito = Carrito(request)
-    variacion = get_object_or_404(VariacionProducto, id=variacion_id)
-
-    carrito.restar(variacion=variacion)
-
-    return redirect("carrito:ver_carrito")
-
-
-# ===== LIMPIAR =====
-@login_required(login_url='login')
-def limpiar_carrito(request):
-    carrito = Carrito(request)
-    carrito.limpiar()
-
-    messages.success(request, "Carrito vaciado correctamente.")
-
-    return redirect("carrito:ver_carrito")
-  # ajusta según tus modelos
-
-@login_required(login_url='login')
-def carrito_view(request):
-    # obtener o crear carrito del usuario
-    carrito, created = Carrito.objects.get_or_create(usuario=request.user, activo=True)
-    
-    #items = ItemCarrito.objects.filter(carrito=carrito)
-    #total = sum(item.variacion.precio * item.cantidad for item in items)
-
-    context = {
+    return render(request, 'carrito.html', {
         'carrito': carrito,
-        #'items': items,
-        #'total': total
-    }
-    return render(request, 'ventas/carrito.html', context)
+        'total': total
+    })
 
 
-# carrito/views.py
+def eliminar_producto(request, producto_id):
+    carrito = request.session.get('carrito', {})
 
-def procesar_pedido(request):
-    return redirect('home')
+    if producto_id in carrito:
+        del carrito[producto_id]
+
+    request.session['carrito'] = carrito
+    request.session.modified = True
+
+    return redirect('ver_carrito')
+
+
+# 🔥 NUEVO: actualizar cantidad
+def actualizar_cantidad(request):
+    if request.method == 'POST':
+        producto_id = request.POST.get('id')
+        accion = request.POST.get('accion')
+
+        carrito = request.session.get('carrito', {})
+
+        if producto_id in carrito:
+            if accion == 'sumar':
+                carrito[producto_id]['cantidad'] += 1
+            elif accion == 'restar':
+                carrito[producto_id]['cantidad'] -= 1
+
+                if carrito[producto_id]['cantidad'] <= 0:
+                    del carrito[producto_id]
+
+        request.session['carrito'] = carrito
+        request.session.modified = True
+
+        return JsonResponse({'ok': True})
+
+
+def vaciar_carrito(request):
+    request.session['carrito'] = {}
+    request.session.modified = True
+    return redirect('ver_carrito')
+
+def finalizar_compra(request):
+    request.session['carrito'] = {}
+    request.session.modified = True
+
+    return render(request, 'compra_exitosa.html')

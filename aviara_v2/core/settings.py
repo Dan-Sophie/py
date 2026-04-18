@@ -136,11 +136,16 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# Esto soluciona el error de la imagen: le dice a Django dónde está TU login
-LOGIN_URL = 'login'
 
-# Esto define a dónde ir después de entrar (al panel)
+# Al iniciar sesión con éxito, redirige a la raíz (tu Home)
 LOGIN_REDIRECT_URL = 'home'
 
-# Esto define a dónde ir al salir
+# Si el usuario cierra sesión, mándalo de vuelta al login
 LOGOUT_REDIRECT_URL = 'login'
+
+# Si intenta entrar a una página protegida sin sesión, mándalo aquí
+LOGIN_URL = 'login'
+
+
+# settings.py
+LOGIN_REDIRECT_URL = 'home'

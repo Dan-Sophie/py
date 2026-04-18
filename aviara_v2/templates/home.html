@@ -2,214 +2,239 @@
 {% load static %}
 
 {% block content %}
+<style>
+    /* Variables de marca */
+    :root {
+        --verde-aviara: #28a745;
+        --verde-oscuro: #1e7e34;
+        --beige: #fdf5e6;
+    }
 
-<!-- ===== HERO ===== -->
-<section class="hero-section">
+    /* Ajustes del Hero */
+    .hero-banner {
+        height: 500px;
+        border-radius: 0 0 50px 50px;
+        overflow: hidden;
+    }
+    .hero-text-box {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 40px;
+        border-radius: 20px;
+        max-width: 500px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    /* Categorías circulares */
+    .category-circle {
+        width: 100px;
+        height: 100px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease;
+        margin-bottom: 10px;
+    }
+    .category-circle:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+    }
+
+    /* Cards de productos */
+    .product-card {
+        border: none;
+        border-radius: 15px;
+        transition: box-shadow 0.3s;
+    }
+    .product-card:hover {
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    .product-img {
+        height: 200px;
+        object-fit: cover;
+        border-radius: 15px 15px 0 0;
+    }
+
+    /* Formulario de contacto */
+    .contact-card {
+        background: #fff;
+        padding: 40px;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    }
+</style>
+
+<section class="hero-section mb-5">
     <div id="mainCarousel" class="carousel slide" data-ride="carousel">
-
         <div class="carousel-inner">
-
+            
             <div class="carousel-item active">
                 <div class="hero-banner d-flex align-items-center"
-                     style="background-image: url('{% static "img/huevos_lote.png" %}');">
-
+                      style="background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('{% static 'img/huevos_lote.png' %}'); background-size: cover; background-position: center;">
                     <div class="container">
                         <div class="hero-text-box">
-                            <span class="badge badge-warning mb-3">🥚 Frescura diaria</span>
-                            <h1 class="display-3 font-weight-bold">Huevos AA Premium</h1>
-                            <p class="lead">Del campo directo a tu mesa</p>
-                            <a href="{% url 'catalogo' %}" class="btn btn-warning btn-lg rounded-pill px-4">
-                                Comprar ahora
+                            <span class="badge badge-success mb-3 p-2">🥚 Directo del Galpón</span>
+                            <h1 class="display-4 font-weight-bold text-dark">Huevos AA Premium</h1>
+                            <p class="lead text-muted">Seleccionados hoy, en tu mesa mañana.</p>
+                            <a href="{% url 'productos:ver_tienda' %}" class="btn btn-success btn-lg rounded-pill px-5 shadow">Comprar ahora</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item"> 
+                <div class="hero-banner d-flex align-items-center justify-content-center text-white text-center"
+                    style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{% static 'img/pollos.jpg' %}'); background-size: cover; background-position: center;">
+                    <div class="container">
+                        <span class="badge badge-warning mb-3 p-2 text-dark font-weight-bold">🌿 100% Natural</span>
+                        <h1 class="display-3 font-weight-bold">Pollos de Libre Pastoreo</h1>
+                        <p class="lead mb-4">Criados en campo abierto, sin químicos y con amor.</p>
+                        <div class="d-flex justify-content-center">
+                            <a href="{% url 'productos:ver_tienda' %}#pollos" class="btn btn-light btn-lg rounded-pill px-5 font-weight-bold text-success shadow">
+                                Ver Ofertas
                             </a>
                         </div>
                     </div>
-
-                </div>
-            </div>
-
-            <div class="carousel-item">
-                <div class="hero-banner d-flex align-items-center justify-content-center text-white"
-                     style="background: linear-gradient(135deg, #1a5f3a, #2d7b4f);">
-
-                    <div class="text-center">
-                        <h1 class="display-3 font-weight-bold">🔥 Ofertas del mes</h1>
-                        <p class="lead">Pollo de campo con descuento</p>
-                        <a href="{% url 'catalogo' %}#pollos" class="btn btn-light btn-lg rounded-pill px-4">
-                            Ver ofertas
-                        </a>
-                    </div>
-
                 </div>
             </div>
 
         </div>
-    </div>
-</section>
 
-<!-- ===== CATEGORÍAS ===== -->
-<section class="py-5 bg-light">
-    <div class="container">
-
-        <h3 class="text-center mb-5 font-weight-bold">Explora por categoría</h3>
-
-        <div class="row justify-content-center">
-
-            {% for cat in categorias %}
-            <div class="col-6 col-md-3 col-lg-2 text-center mb-4">
-
-                <a href="{% url 'catalogo' %}#{{ cat.id }}" class="text-decoration-none">
-
-                    <div class="category-circle shadow-sm mx-auto">
-                        <i class="fas fa-{{ cat.icon }} fa-2x text-{{ cat.color }}"></i>
-                    </div>
-
-                    <span class="badge badge-pill mt-3"
-                          style="background-color: var(--beige); color: var(--verde-oscuro);">
-                        {{ cat.id|upper }}
-                    </span>
-
-                </a>
-
-            </div>
-            {% endfor %}
-
-        </div>
-    </div>
-</section>
-
-<!-- ===== PRODUCTOS ===== -->
-<section class="py-5 bg-white">
-    <div class="container">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="font-weight-bold">🔥 Los más pedidos</h2>
-            <a href="{% url 'catalogo' %}" class="btn btn-outline-dark btn-sm">Ver todo →</a>
-        </div>
-
-        <div class="row">
-
-            {% for i in "1234" %}
-            <div class="col-6 col-md-4 col-lg-3 mb-4">
-
-                <div class="card product-card h-100">
-
-                    <div class="position-relative">
-                        <span class="badge badge-danger position-absolute m-2">-15%</span>
-                        <img src="{% static 'img/huevos_lote.png' %}" class="card-img-top product-img">
-                    </div>
-
-                    <div class="card-body d-flex flex-column">
-
-                        <small class="text-muted">Aviara</small>
-                        <h6 class="font-weight-bold">Huevo AA x30</h6>
-
-                        <div class="mt-auto">
-                            <small class="text-muted"><del>$18.500</del></small>
-                            <h5 class="product-price">$16.500</h5>
-
-                            {% if user.is_authenticated %}
-                                <a href="#" class="btn btn-warning btn-block rounded-pill">
-                                    🛒 Agregar
-                                </a>
-                            {% else %}
-                                <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-block">
-                                    🔐 Inicia sesión
-                                </a>
-                            {% endif %}
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-            {% endfor %}
-
-        </div>
-    </div>
-</section>
-
-<!-- ===== CTA ===== -->
-<section class="py-5 text-center cta-section"
-         style="background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-claro));">
-    <div class="container">
-        <h2 class="font-weight-bold">Compra fresco sin salir de casa</h2>
-        <p>Entrega rápida en Bogotá 🚚</p>
-        <a href="{% url 'catalogo' %}" class="btn btn-light mt-3 px-4">
-            Ver catálogo
+        <a class="carousel-control-prev" href="#mainCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Anterior</span>
+        </a>
+        <a class="carousel-control-next" href="#mainCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Siguiente</span>
         </a>
     </div>
 </section>
 
-<!-- ===== CONTACTO ===== -->
 <section class="py-5">
-    <div class="container">
-
-        <div class="row align-items-center contact-card">
-
-            <div class="col-md-6">
-                <h3 class="font-weight-bold">📩 Contáctanos</h3>
-                <p class="text-muted">Pedidos grandes, dudas o alianzas</p>
+    <div class="container text-center">
+        <h2 class="font-weight-bold mb-5">Nuestra Despensa</h2>
+        <div class="row justify-content-center">
+            {% for cat in categorias %}
+            <div class="col-6 col-md-3 col-lg-2 mb-4">
+                <a href="{% url 'productos:ver_tienda' %}#{{ cat.id }}" class="text-decoration-none d-block">
+                    <div class="category-circle shadow-sm mx-auto">
+                        <i class="fas fa-{{ cat.icon|default:'egg' }} fa-2x text-success"></i>
+                    </div>
+                    <p class="font-weight-bold text-dark mt-2">{{ cat.nombre|default:cat.id|upper }}</p>
+                </a>
             </div>
-
-            <div class="col-md-6">
-                <form method="post">
-                    {% csrf_token %}
-
-                    <input type="text" class="form-control mb-2" placeholder="Nombre" required>
-                    <input type="email" class="form-control mb-2" placeholder="Correo" required>
-                    <textarea class="form-control mb-2" rows="3" placeholder="Mensaje"></textarea>
-
-                    <button class="btn btn-warning btn-block">
-                        Enviar mensaje
-                    </button>
-                </form>
-            </div>
-
+            {% endfor %}
         </div>
-
     </div>
 </section>
 
-<!-- ===== FOOTER ===== -->
-<footer style="background: var(--verde-oscuro); color: white;" class="pt-5 pb-3">
-
+<section class="py-5 bg-light">
     <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="font-weight-bold mb-0">🔥 Los más pedidos</h2>
+                <p class="text-muted">Favoritos en Bogotá</p>
+            </div>
+            <a href="{% url 'productos:ver_tienda' %}" class="btn btn-link text-success font-weight-bold">Ver todo →</a>
+        </div>
 
         <div class="row">
-
             <div class="col-md-4 mb-4">
-                <h5 class="font-weight-bold">AVIARA</h5>
-                <p class="small">
-                    Productos frescos del campo colombiano directo a tu hogar.
-                </p>
+                <div class="card product-card h-100 shadow-sm">
+                    <div class="position-relative">
+                        <span class="badge badge-danger position-absolute m-2" style="z-index:1">-15%</span>
+                        <img src="{% static 'img/huevos_lote.png' %}" class="card-img-top product-img" alt="Huevos">
+                    </div>
+                    <div class="card-body d-flex flex-column text-center">
+                        <h6 class="font-weight-bold mb-1">Huevo AA x 30 Unidades</h6>
+                        <p class="small text-muted mb-3">Categoría: Huevos</p>
+                        <div class="mt-auto">
+                            <h5 class="text-success font-weight-bold mb-3">$16.500</h5>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'productos:ver_tienda' %}" class="btn btn-success btn-block rounded-pill">Agregar</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-block rounded-pill">Inicia sesión</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col-md-4 mb-4">
-                <h6 class="font-weight-bold">Enlaces</h6>
-                <ul class="list-unstyled">
-                    <li><a href="{% url 'catalogo' %}" class="text-white">Catálogo</a></li>
-                    <li><a href="#" class="text-white">Nosotros</a></li>
-                </ul>
+                <div class="card product-card h-100 shadow-sm">
+                    <div class="position-relative">
+                        <span class="badge badge-success position-absolute m-2" style="z-index:1">Fresco</span>
+                        <img src="{% static 'img/pollo-campesino.png' %}" class="card-img-top product-img" alt="Pollo">
+                    </div>
+                    <div class="card-body d-flex flex-column text-center">
+                        <h6 class="font-weight-bold mb-1">Pollo de Pastoreo Entero</h6>
+                        <p class="small text-muted mb-3">Categoría: Cárnicos</p>
+                        <div class="mt-auto">
+                            <h5 class="text-success font-weight-bold mb-3">$22.000</h5>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'productos:ver_tienda' %}" class="btn btn-success btn-block rounded-pill">Agregar</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-block rounded-pill">Inicia sesión</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col-md-4 mb-4">
-                <h6 class="font-weight-bold">Contacto</h6>
-                <p class="small mb-1">📍 Bogotá</p>
-                <p class="small mb-1">📞 +57 300 000 0000</p>
-                <p class="small">✉️ aviara@email.com</p>
+                <div class="card product-card h-100 shadow-sm">
+                    <div class="position-relative">
+                        <span class="badge badge-warning position-absolute m-2" style="z-index:1">Popular</span>
+                        <img src="{% static 'img/queso.jpg' %}" class="card-img-top product-img" alt="Queso">
+                    </div>
+                    <div class="card-body d-flex flex-column text-center">
+                        <h6 class="font-weight-bold mb-1">Queso Campesino Finca</h6>
+                        <p class="small text-muted mb-3">Categoría: Lácteos</p>
+                        <div class="mt-auto">
+                            <h5 class="text-success font-weight-bold mb-3">$9.500</h5>
+                            {% if user.is_authenticated %}
+                                <a href="#" class="btn btn-success btn-block rounded-pill">Agregar</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-block rounded-pill">Inicia sesión</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </div>
-
-        <hr style="background: rgba(255,255,255,0.2);">
-
-        <div class="text-center small">
-            © 2026 Aviara - Todos los derechos reservados
-        </div>
-
     </div>
+</section>
 
-</footer>
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="contact-card row align-items-center mx-0">
+            <div class="col-md-5 pr-md-5">
+                <h2 class="font-weight-bold">¿Tienes dudas?</h2>
+                <p class="text-muted mb-4">Estamos aquí para ayudarte con tus pedidos o cualquier consulta.</p>
+                <div class="d-flex mb-3">
+                    <div class="text-success mr-3"><i class="fas fa-map-marker-alt"></i></div>
+                    <p class="small mb-0">Distribución en Bogotá</p>
+                </div>
+            </div>
+            <div class="col-md-7 border-left pl-md-5">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <input type="text" class="form-control bg-light border-0" placeholder="Nombre completo" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <input type="email" class="form-control bg-light border-0" placeholder="Correo electrónico" required>
+                        </div>
+                    </div>
+                    <textarea class="form-control bg-light border-0 mb-3" rows="3" placeholder="¿Cómo podemos ayudarte?"></textarea>
+                    <button class="btn btn-success px-5 rounded-pill shadow-sm">Enviar mensaje</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 
 {% endblock %}
