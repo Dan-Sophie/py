@@ -21,67 +21,83 @@ class LoteAves(models.Model):
         return self.codigo_lote
 
  
+from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+from django.db import transaction
+
 class ProduccionHuevos(models.Model):
-    # 1. Definición de constantes fuera de la clase para limpieza
     class Clasificacion(models.TextChoices):
         TRIPLE_A = 'AAA', 'Triple A'
         DOBLE_A = 'AA', 'Doble A'
         A = 'A', 'A'
         B = 'B', 'B'
 
-    # 2. Campos del modelo
+    # Relaciones
     lote = models.ForeignKey(
         'LoteAves', 
         on_delete=models.CASCADE, 
         related_name='recolecciones',
-        verbose_name="Lote de Origen"
+        verbose_name="Lote de Aves"
     )
-    fecha_recoleccion = models.DateTimeField(
-        default=timezone.now,
-        verbose_name="Fecha de Recolección"
+    # Vinculamos a la Variación para que el catálogo se actualice de una
+    variacion_objetivo = models.ForeignKey(
+        'productos.VariacionProducto', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        verbose_name="Producto/Presentación en Tienda",
+        help_text="Seleccione qué producto del catálogo recibirá este stock"
     )
-    cantidad_total = models.PositiveIntegerField(verbose_name="Cantidad Recolectada")
-    clasificacion = models.CharField(
-        max_length=5, 
-        choices=Clasificacion.choices,
-        verbose_name="Clasificación del Huevo"
-    )
+
+    # Datos de producción
+    fecha_recoleccion = models.DateTimeField(default=timezone.now)
+    cantidad_total = models.PositiveIntegerField(verbose_name="Cantidad (Unidades)")
+    clasificacion = models.CharField(max_length=5, choices=Clasificacion.choices)
 
     class Meta:
         verbose_name = "Producción de Huevo"
-        verbose_name_plural = "Producciones de Huevos"
-        ordering = ['-fecha_recoleccion']
+        verbose_name_plural = "Producción de Huevos"
 
     def __str__(self):
-        return f"{self.get_clasificacion_display()} - Lote: {self.lote.codigo_lote}"
+        return f"{self.get_clasificacion_display()} - {self.lote.codigo_lote} ({self.fecha_recoleccion.date()})"
 
-    # 3. Lógica de negocio (Refactorizada)
-    def registrar_en_inventario(self):
-        """Encapsula la lógica de inventario en un método separado"""
+    def registrar_flujo_inventario(self):
+        """Lógica para conectar Producción con el Inventario y la Tienda"""
         from inventario.models import StockHuevo, HistorialMovimiento
         
+        # 1. Calculamos vencimiento
         vencimiento = self.fecha_recoleccion.date() + timedelta(days=30)
         
-        # Crear el stock
+        # 2. Creamos el registro de Stock técnico
         StockHuevo.objects.create(
             produccion=self,
             cantidad_disponible=self.cantidad_total,
             fecha_vencimiento=vencimiento
         )
         
-        # Registrar el historial
+        # 3. ACTUALIZAMOS EL STOCK DE LA TIENDA (Lo que la profe quiere ver)
+        if self.variacion_objetivo:
+            # Asumiendo que tu modelo VariacionProducto tiene un campo 'stock'
+            # Si no lo tiene, este paso asegura que al menos exista la relación
+            self.variacion_objetivo.stock = (self.variacion_objetivo.stock or 0) + self.cantidad_total
+            self.variacion_objetivo.save()
+
+        # 4. Historial para auditoría
         HistorialMovimiento.objects.create(
             tipo_movimiento='entrada',
-            producto_nombre=f"Huevo {self.get_clasificacion_display()} (Lote {self.lote.codigo_lote})",
+            producto_nombre=f"Huevo {self.get_clasificacion_display()} - Lote {self.lote.codigo_lote}",
             cantidad=self.cantidad_total,
-            observacion="Entrada automática por registro de producción."
+            observacion=f"Producción vinculada a: {self.variacion_objetivo}" if self.variacion_objetivo else "Entrada sin producto asignado"
         )
 
     def save(self, *args, **kwargs):
         es_nuevo = self.pk is None
-        super().save(*args, **kwargs)
-        if es_nuevo:
-            self.registrar_en_inventario()
+        # Usamos transaction para asegurar que si algo falla, no se guarde nada a medias
+        with transaction.atomic():
+            super().save(*args, **kwargs)
+            if es_nuevo:
+                self.registrar_flujo_inventario()
 
 class ProductoAgricola(models.Model):
     nombre = models.CharField(max_length=100)

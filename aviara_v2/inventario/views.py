@@ -64,18 +64,45 @@ def eliminar_item(request, pk, tipo):
 # 5. EXPORTACIÓN PDF
 def exportar_inventario_pdf(request):
     template_path = 'inventario/reporte_pdf.html'
+    
+    # --- FILTROS MULTICRITERIO ---
+    # Capturamos parámetros de la URL (si vienen del formulario)
+    categoria_filtro = request.GET.get('categoria')
+    solo_bajo_stock = request.GET.get('bajo_stock')
+
+    # Inicializamos los querysets
+    huevos = StockHuevo.objects.all()
+    agricola = StockAgricola.objects.all()
+
+    # Aplicamos filtros si el usuario los seleccionó
+    if categoria_filtro:
+        # Filtramos huevos o agrícola según la categoría
+        huevos = huevos.filter(variacion__producto__categoria__nombre__icontains=categoria_filtro)
+        agricola = agricola.filter(producto__categoria__nombre__icontains=categoria_filtro)
+
+    if solo_bajo_stock == 'true':
+        # Filtro multicriterio: solo productos con stock menor a 10 (por ejemplo)
+        huevos = huevos.filter(cantidad__lt=10)
+        agricola = agricola.filter(cantidad__lt=10)
+
+    # --- GENERACIÓN DEL PDF ---
     context = {
-        'huevos': StockHuevo.objects.all(),
-        'agricola': StockAgricola.objects.all(),
-        'empresa': 'Aviara v2 - Control de Inventario'
+        'huevos': huevos,
+        'agricola': agricola,
+        'empresa': 'Aviara v2 - Reporte Inteligente de Inventario',
+        'filtros': {
+            'categoria': categoria_filtro if categoria_filtro else "Todas",
+            'estado': "Crítico (Bajo Stock)" if solo_bajo_stock == 'true' else "Completo"
+        }
     }
+    
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="reporte_inventario.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="reporte_inventario_filtrado.pdf"'
     
     template = get_template(template_path)
     html = template.render(context)
     pisa_status = pisa.CreatePDF(html, dest=response)
     
     if pisa_status.err:
-       return HttpResponse('Error al generar el reporte <pre>' + html + '</pre>')
+        return HttpResponse('Error al generar el reporte <pre>' + html + '</pre>')
     return response

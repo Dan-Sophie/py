@@ -57,9 +57,10 @@
             <p class="lead text-muted">Gestión inteligente de la granja <span class="text-primary font-weight-bold">Aviara</span></p>
         </div>
         <div class="col-md-5 text-md-right">
-            <a href="{% url 'exportar_pdf' %}" class="btn btn-dark btn-round shadow-lg px-4">
-                <i class="fas fa-file-pdf mr-2"></i>Generar Reporte Global
-            </a>
+           <a href="{% url 'exportar_pdf' %}?categoria={{ request.GET.categoria }}&bajo_stock={{ request.GET.bajo_stock }}" 
+            class="btn btn-danger">
+            Descargar PDF
+        </a>
         </div>
     </div>
 
