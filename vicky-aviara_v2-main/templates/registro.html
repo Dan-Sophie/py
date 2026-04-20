@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4" style="color: #2c3e50; font-weight: 600;">Registro de Usuario</h2>
+                    <p class="text-muted text-center mb-4">Crea una cuenta para el sistema de gestión Aviara</p>
+                    
+                    <form method="POST" autocomplete="off">
+                        {% csrf_token %}
+                        
+                        {# Renderiza los campos: username, email, first_name, last_name, documento #}
+                        {{ form.username|as_crispy_field }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.first_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.last_name|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        {{ form.email|as_crispy_field }}
+                        {{ form.documento|as_crispy_field }}
+
+                        {# Campos manuales de contraseña que definimos en el forms.py #}
+                        {{ form.password1|as_crispy_field }}
+                        {{ form.password2|as_crispy_field }}
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-block" style="background-color: #28a745; border: none; border-radius: 8px; padding: 10px;">
+                                Registrar Usuario
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            ¿Ya tienes una cuenta? <a href="{% url 'login' %}" style="color: #28a745;">Inicia sesión aquí</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
